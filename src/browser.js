@@ -3,10 +3,9 @@ import {createPlugin} from 'fusion-core';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken} from './tokens';
 
-const plugin =
-  __BROWSER__ &&
+const getPlugin = () =>
   createPlugin({
-    deps: {muiTheme: MuiThemeToken.optional},
+    // deps: {muiTheme: MuiThemeToken.optional},
     provides({muiTheme}) {
       return {
         theme: muiTheme || createMuiTheme(),
@@ -24,4 +23,4 @@ const plugin =
     },
   });
 
-export default plugin;
+export default getPlugin;
