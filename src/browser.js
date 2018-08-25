@@ -1,26 +1,35 @@
+// @flow
+/* eslint-env browser */
 import React from 'react';
 import {createPlugin} from 'fusion-core';
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
-import {MuiThemeToken} from './tokens';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {MuiThemeProvider} from '@material-ui/core/styles';
+import {MuiThemeToken, JssToken} from './tokens';
 
-const getPlugin = () =>
+const plugin =
+  __BROWSER__ &&
   createPlugin({
-    // deps: {muiTheme: MuiThemeToken.optional},
-    provides({muiTheme}) {
-      return {
-        theme: muiTheme || createMuiTheme(),
-      };
-    },
-    middleware(_, {theme}) {
-      return (ctx, next) => {
-        if (ctx.element) {
+    deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
+    middleware({theme, jss}) {
+      return async (ctx, next) => {
+        if (!ctx.element) return next();
+
+        if (theme) {
           ctx.element = (
             <MuiThemeProvider theme={theme}>{ctx.element}</MuiThemeProvider>
           );
         }
-        return next();
+
+        if (jss) {
+          ctx.element = <JssProvider jss={jss}>{ctx.element}</JssProvider>;
+        }
+
+        await next();
+
+        const el = __BROWSER__ && document.getElementById('__MUI_STYLES__');
+        if (el) el.remove();
       };
     },
   });
 
-export default getPlugin;
+export default plugin;
