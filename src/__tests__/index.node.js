@@ -31,7 +31,7 @@ tape('provides a custom jss instance', async t => {
   t.equals(service.from(ctx).jss, testJss, 'passes along the jss instance');
 
   t.end();
-})
+});
 
 tape('provides theme', async t => {
   const element = React.createElement('div');

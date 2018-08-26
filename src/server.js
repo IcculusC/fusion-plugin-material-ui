@@ -8,6 +8,7 @@ import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken, JssToken} from './tokens';
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
+import { type MuiThemeProviderDepsType, type MuiThemeProviderServiceType } from './types';
 
 const plugin =
   __NODE__ &&
@@ -15,6 +16,10 @@ const plugin =
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
     provides({jss, theme}) {
       class MuiService {
+        ctx: Context;
+        jss: any;
+        theme: any;
+
         constructor(ctx) {
           this.sheetsRegistry = new SheetsRegistry();
           this.ctx = ctx;
@@ -50,4 +55,4 @@ const plugin =
     },
   });
 
-export default plugin;
+export default ((plugin: any): FusionPlugin<MuiThemeProviderDepsType, MuiThemeProviderServiceType>);
