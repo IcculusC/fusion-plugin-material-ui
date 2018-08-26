@@ -3,7 +3,6 @@
 import React from 'react';
 import {createPlugin, memoize} from 'fusion-core';
 import JssProvider from 'react-jss/lib/JssProvider';
-import defaultJss from 'react-jss/lib/jss';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken, JssToken} from './tokens';
 
@@ -15,7 +14,7 @@ const plugin =
       class MuiService {
         constructor(ctx) {
           this.ctx = ctx;
-          this.jss = jss ? jss : defaultJss;
+          this.jss = jss;
           this.theme = theme ? theme : createMuiTheme();
         }
       }
@@ -29,13 +28,11 @@ const plugin =
 
         const {jss, theme} = await muiService.from(ctx);
 
-        if (theme) {
-          ctx.element = (
-            <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
-              {ctx.element}
-            </MuiThemeProvider>
-          );
-        }
+        ctx.element = (
+          <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
+            {ctx.element}
+          </MuiThemeProvider>
+        );
 
         if (jss) {
           ctx.element = <JssProvider jss={jss}>{ctx.element}</JssProvider>;
