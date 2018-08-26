@@ -31,7 +31,7 @@ tape('provides a custom jss instance', async t => {
   t.equals(service.from(ctx).jss, testJss, 'passes along the jss instance');
 
   t.end();
-})
+});
 
 tape('provides theme', async t => {
   const element = React.createElement('div');
@@ -41,12 +41,11 @@ tape('provides theme', async t => {
 
   t.plan(2);
 
-  t.equals(serviceWithTheme.from(ctx).theme.foo, 'bar', 'passes along theme');
-  t.notEqual(
-    serviceWithoutTheme.from(ctx).theme.spacing.unit,
-    null,
-    'but has a default theme'
-  );
+  const withTheme: any = serviceWithTheme.from(ctx).theme;
+  const withoutTheme: any = serviceWithoutTheme.from(ctx).theme;
+
+  t.equals(withTheme.foo, 'bar', 'passes along theme');
+  t.notEqual(withoutTheme.spacing.unit, null, 'but has a default theme');
 
   t.end();
 });
@@ -62,6 +61,7 @@ tape('serialization', async t => {
   await Plugin.middleware(null, service)(ctx, () => Promise.resolve());
   t.equals(ctx.template.body.length, 1, 'pushes serialization to body');
   t.equals(
+    // $FlowFixMe
     consumeSanitizedHTML(ctx.template.body[0]).match('</style>').input,
     '<style type="text/css" id="__MUI_STYLES__"></style>'
   );
