@@ -1,22 +1,39 @@
 // @flow
 /* eslint-env browser */
 import React from 'react';
-import {createPlugin} from 'fusion-core';
+import {createPlugin, memoize} from 'fusion-core';
 import JssProvider from 'react-jss/lib/JssProvider';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import defaultJss from 'react-jss/lib/jss';
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken, JssToken} from './tokens';
 
 const plugin =
   __BROWSER__ &&
   createPlugin({
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
-    middleware({theme, jss}) {
+    provides({jss, theme}) {
+      class MuiService {
+        constructor(ctx) {
+          this.ctx = ctx;
+          this.jss = jss ? jss : defaultJss;
+          this.theme = theme ? theme : createMuiTheme();
+        }
+      }
+      return {
+        from: memoize(ctx => new MuiService(ctx)),
+      };
+    },
+    middleware(_, muiService) {
       return async (ctx, next) => {
         if (!ctx.element) return next();
 
+        const {jss, theme} = await muiService.from(ctx);
+
         if (theme) {
           ctx.element = (
-            <MuiThemeProvider theme={theme}>{ctx.element}</MuiThemeProvider>
+            <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
+              {ctx.element}
+            </MuiThemeProvider>
           );
         }
 
