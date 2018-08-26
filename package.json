@@ -1,9 +1,9 @@
 {
-  "name": "fusion-plugin-yourplugin",
-  "description": "A Fusion.js plugin",
-  "version": "0.0.0",
+  "name": "fusion-plugin-material-ui",
+  "description": "material-ui support for Fusion.js",
+  "version": "0.0.1",
   "license": "MIT",
-  "repository": "yourorg/fusion-plugin-yourplugin",
+  "repository": "IcculusC/fusion-plugin-material-ui",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
   "browser": {
