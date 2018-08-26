@@ -5,6 +5,10 @@ import {createPlugin, memoize} from 'fusion-core';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken, JssToken} from './tokens';
+import {
+  type MuiThemeProviderServiceType,
+  type MuiThemeProviderDepsType,
+} from './types';
 
 const plugin =
   __BROWSER__ &&
@@ -12,6 +16,10 @@ const plugin =
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
     provides({jss, theme}) {
       class MuiService {
+        ctx: Context;
+        jss: any;
+        theme: any;
+
         constructor(ctx) {
           this.ctx = ctx;
           this.jss = jss;
@@ -40,10 +48,14 @@ const plugin =
 
         await next();
 
+        // $FlowFixMe
         const el = __BROWSER__ && document.getElementById('__MUI_STYLES__');
         if (el) el.remove();
       };
     },
   });
 
-export default plugin;
+export default ((plugin: any): FusionPlugin<
+  MuiThemeProviderDepsType,
+  MuiThemeProviderServiceType
+>);
