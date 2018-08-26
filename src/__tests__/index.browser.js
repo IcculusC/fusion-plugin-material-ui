@@ -52,7 +52,8 @@ tape('provides theme', async t => {
 
   t.plan(2);
 
-  t.equals(serviceWithTheme.from(ctx).theme.foo, 'bar', 'passes along theme');
+  const theme: any = serviceWithTheme.from(ctx).theme;
+  t.equals(theme.foo, 'bar', 'passes along theme');
   t.notEqual(
     serviceWithoutTheme.from(ctx).theme,
     null,
@@ -66,6 +67,9 @@ tape('removes useless SSR styles after render', async t => {
   const ssrStyles = document.createElement('style');
   ssrStyles.setAttribute('type', 'text/css');
   ssrStyles.setAttribute('id', '__MUI_STYLES__');
+  if (!(document.body instanceof HTMLElement)) {
+    return t.fail();
+  }
   document.body.appendChild(ssrStyles);
   const element = React.createElement('div');
   const ctx: any = {element, template: {body: []}, memoized: new Map()};

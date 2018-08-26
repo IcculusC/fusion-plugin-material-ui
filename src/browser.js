@@ -6,17 +6,25 @@ import JssProvider from 'react-jss/lib/JssProvider';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import {MuiThemeToken, JssToken} from './tokens';
 
+import type {Context, FusionPlugin} from 'fusion-core';
+import type {MaterialUIDepsType, MaterialUIServiceType} from './types.js';
+
 const plugin =
   __BROWSER__ &&
   createPlugin({
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
     provides({jss, theme}) {
-      class MuiService {
+      class MuiService<T> {
         constructor(ctx) {
           this.ctx = ctx;
           this.jss = jss;
           this.theme = theme ? theme : createMuiTheme();
         }
+
+        // TODO: More specific types
+        theme: T;
+        ctx: Context;
+        jss: mixed;
       }
       return {
         from: memoize(ctx => new MuiService(ctx)),
@@ -46,4 +54,7 @@ const plugin =
     },
   });
 
-export default plugin;
+export default ((plugin: any): FusionPlugin<
+  MaterialUIDepsType,
+  MaterialUIServiceType
+>);
