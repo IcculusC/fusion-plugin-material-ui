@@ -1,53 +1,26 @@
 // @flow
 /* eslint-env node */
-
-import React from 'react';
-import {createPlugin, html, memoize} from 'fusion-core';
-import defaultJss, {SheetsRegistry} from 'react-jss/lib/jss';
-import JssProvider from 'react-jss/lib/JssProvider';
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
+import {createPlugin, html} from 'fusion-core';
 import {MuiThemeToken, JssToken} from './tokens';
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 
-import type {Context, FusionPlugin} from 'fusion-core';
+import type {FusionPlugin} from 'fusion-core';
 import type {MaterialUIDepsType, MaterialUIServiceType} from './types.js';
+import {addProviders} from './middleware';
+import {provides} from './provider';
 
 const plugin =
   __NODE__ &&
   createPlugin({
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
-    provides({jss, theme}) {
-      class MuiService<T> {
-        constructor(ctx) {
-          this.sheetsRegistry = new SheetsRegistry();
-          this.ctx = ctx;
-          this.jss = jss ? jss : defaultJss;
-          this.theme = theme ? theme : createMuiTheme();
-        }
-
-        // TODO: More specific types
-        theme: T;
-        ctx: Context;
-        sheetsRegistry: mixed;
-        jss: mixed;
-      }
-      return {
-        from: memoize(ctx => new MuiService(ctx)),
-      };
-    },
+    provides,
     middleware(_, muiService) {
       return async (ctx, next) => {
         if (!ctx.element) return next();
-        const {jss, sheetsRegistry, theme} = muiService.from(ctx);
+        const {sheetsRegistry} = muiService.from(ctx);
 
-        ctx.element = (
-          <JssProvider jss={jss} registry={sheetsRegistry}>
-            <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
-              {ctx.element}
-            </MuiThemeProvider>
-          </JssProvider>
-        );
+        ctx.element = await addProviders(ctx, muiService);
 
         await next();
 
