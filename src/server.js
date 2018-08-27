@@ -1,6 +1,6 @@
 // @flow
 /* eslint-env node */
-import {createPlugin, html} from 'fusion-core';
+import {createPlugin, dangerouslySetHTML} from 'fusion-core';
 import {MuiThemeToken, JssToken} from './tokens';
 import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
@@ -28,7 +28,9 @@ const plugin =
           // $FlowFixMe
           sheetsRegistry.toString()
         );
-        const styles = html`<style type="text/css" id="__MUI_STYLES__">${serialized}</style>`;
+        const styles = dangerouslySetHTML(
+          `<style type="text/css" id="__MUI_STYLES__">${serialized}</style>`
+        );
         ctx.template.body.push(styles);
       };
     },
