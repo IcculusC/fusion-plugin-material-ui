@@ -1,6 +1,7 @@
 // @flow
 /* eslint-env browser */
 import React from 'react';
+import defaultJss, {SheetsRegistry} from 'react-jss/lib/jss';
 import {createPlugin, memoize} from 'fusion-core';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
@@ -17,13 +18,15 @@ const plugin =
       class MuiService<T> {
         constructor(ctx) {
           this.ctx = ctx;
-          this.jss = jss;
+          this.sheetsRegistry = new SheetsRegistry();
+          this.jss = jss ? jss : defaultJss;
           this.theme = theme ? theme : createMuiTheme();
         }
 
         // TODO: More specific types
         theme: T;
         ctx: Context;
+        sheetsRegistry: mixed;
         jss: mixed;
       }
       return {
@@ -34,7 +37,7 @@ const plugin =
       return async (ctx, next) => {
         if (!ctx.element) return next();
 
-        const {jss, theme} = await muiService.from(ctx);
+        const {jss, sheetsRegistry, theme} = await muiService.from(ctx);
 
         ctx.element = (
           <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
@@ -43,7 +46,11 @@ const plugin =
         );
 
         if (jss) {
-          ctx.element = <JssProvider jss={jss}>{ctx.element}</JssProvider>;
+          ctx.element = (
+            <JssProvider jss={jss} registry={sheetsRegistry}>
+              {ctx.element}
+            </JssProvider>
+          );
         }
 
         await next();
