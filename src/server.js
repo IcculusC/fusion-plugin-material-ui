@@ -2,7 +2,7 @@
 /* eslint-env node */
 
 import React from 'react';
-import {createPlugin, html, memoize} from 'fusion-core';
+import {createPlugin, dangerouslySetHTML, memoize} from 'fusion-core';
 import defaultJss, {SheetsRegistry} from 'react-jss/lib/jss';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
@@ -55,7 +55,9 @@ const plugin =
           // $FlowFixMe
           sheetsRegistry.toString()
         );
-        const styles = html`<style type="text/css" id="__MUI_STYLES__">${serialized}</style>`;
+        const styles = dangerouslySetHTML(
+          `<style type="text/css" id="__MUI_STYLES__">${serialized}</style>`
+        );
         ctx.template.body.push(styles);
       };
     },
