@@ -2,8 +2,7 @@
 /* eslint-env node */
 import {createPlugin, dangerouslySetHTML} from 'fusion-core';
 import {MuiThemeToken, JssToken} from './tokens';
-import autoprefixer from 'autoprefixer';
-import postcss from 'postcss';
+import pleeease from 'pleeease';
 
 import type {FusionPlugin} from 'fusion-core';
 import type {MaterialUIDepsType, MaterialUIServiceType} from './types.js';
@@ -24,7 +23,7 @@ const plugin =
 
         await next();
 
-        const serialized = await postcss([autoprefixer]).process(
+        const serialized = await pleeease(
           // $FlowFixMe
           sheetsRegistry.toString()
         );
