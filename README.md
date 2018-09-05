@@ -10,13 +10,14 @@ This plugin will provide drop in support for "just works" server side rendering 
 * [Usage](#usage)
 * [Setup](#setup)
 * [API](#api)
-    * [Registration API](#registration-api)
-    * [Dependencies](#dependencies)
+  * [Registration API](#registration-api)
+  * [Dependencies](#dependencies)
 * [Advanced Usage](#advancedusage)
 
 ---
 
 ### Installation
+
 ```js
 yarn add fusion-plugin-material-ui
 ```
@@ -47,14 +48,16 @@ export ButtonWrap = () => (
 import React from 'react';
 import App from 'fusion-react';
 
-import MuiThemeProvider, {MuiThemeProviderToken} from 'fusion-plugin-material-ui';
+import MuiThemeProvider, {
+  MuiThemeProviderToken,
+} from 'fusion-plugin-material-ui';
 
 export default () => {
   const app = new App(root);
   // will use the default theme
   app.register(MuiThemeProviderToken, MuiThemeProvider);
   return app;
-}
+};
 ```
 
 #### Custom Theme
@@ -66,15 +69,18 @@ export default () => {
 import React from 'react';
 import App from 'fusion-react';
 
-import MuiThemeProvider, {MuiThemeProviderToken, MuiThemeToken} from 'fusion-plugin-material-ui';
-import {createMuiTheme} from '@material-ui/styles/createMuiTheme';
+import MuiThemeProvider, {
+  MuiThemeProviderToken,
+  MuiThemeToken,
+} from 'fusion-plugin-material-ui';
+import {createMuiTheme} from '@material-ui/core/styles';
 
 export default () => {
   const app = new App(root);
-  app.register(MuiThemeToken, createMuiTheme({ fooColor: '#ba4' }));
+  app.register(MuiThemeToken, createMuiTheme({fooColor: '#ba4'}));
   app.register(MuiThemeProviderToken, MuiThemeProvider);
   return app;
-}
+};
 ```
 
 ### API
@@ -82,6 +88,7 @@ export default () => {
 #### Registration API
 
 ##### `MuiThemeProvider`
+
 ```js
 import MuiThemeProvider from 'fusion-plugin-material-ui';
 ```
@@ -89,6 +96,7 @@ import MuiThemeProvider from 'fusion-plugin-material-ui';
 Adds the `MuiThemeProvider` from `@material-ui/core` and handles server side rendering. Typically registered with [`MuiThemeProviderToken`](#muithemeprovidertoken)
 
 ##### `MuiThemeProviderToken`
+
 ```js
 import {MuiThemeProviderToken} from 'fusion-plugin-material-ui';
 ```
@@ -98,6 +106,7 @@ Typicall registered with [`MuiThemeProvider`](#muithemeprovider)
 #### Dependencies
 
 ##### `MuiThemeToken`
+
 ```js
 import {MuiThemeToken} from 'fusion-plugin-material-ui';
 ```
@@ -106,6 +115,7 @@ Register with your own custom `material-ui` theme.
 Optional
 
 ##### `JssToken`
+
 ```js
 import {JssToken} from 'fusion-plugin-material-ui';
 ```
@@ -136,7 +146,10 @@ import React from 'react';
 import App from 'fusion-react';
 
 import {create} from 'jss';
-import MuiThemeProvider, {JssToken, MuiThemeProviderToken} from 'fusion-plugin-material-ui';
+import MuiThemeProvider, {
+  JssToken,
+  MuiThemeProviderToken,
+} from 'fusion-plugin-material-ui';
 
 export default () => {
   const app = new App(root);
@@ -144,5 +157,5 @@ export default () => {
   app.register(JssToken, create());
   app.register(MuiThemeProviderToken, MuiThemeProvider);
   return app;
-}
+};
 ```
