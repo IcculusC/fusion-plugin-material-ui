@@ -19,5 +19,7 @@ export type MaterialUIServiceType = {
     ctx: Context,
     sheetsRegistry: mixed,
     jss: mixed,
+    generateClassName: mixed,
+    sheetsManager: mixed,
   },
 };

@@ -10,18 +10,18 @@ import {
 
 import type {Context} from 'fusion-core';
 
-export const provides = ({jss, theme}) => {
+export const provides = ({jss, theme}: any) => {
   class MuiService<T> {
     constructor(ctx) {
       this.ctx = ctx;
       this.sheetsRegistry = new SheetsRegistry();
       this.generateClassName = createGenerateClassName();
+      this.sheetsManager = new Map();
       this.theme = theme ? theme : createMuiTheme();
       if (jss) {
         this.jss = jss;
       } else {
-        this.jss = createJss();
-        this.jss.setup(jssPreset);
+        this.jss = createJss(jssPreset());
       }
     }
 
@@ -31,6 +31,7 @@ export const provides = ({jss, theme}) => {
     sheetsRegistry: mixed;
     jss: mixed;
     generateClassName: mixed;
+    sheetsManager: mixed;
   }
   return {
     from: memoize(ctx => new MuiService(ctx)),
