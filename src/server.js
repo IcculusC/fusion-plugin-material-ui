@@ -1,8 +1,8 @@
 // @flow
 /* eslint-env node */
 import {createPlugin, dangerouslySetHTML} from 'fusion-core';
+import {SheetsRegistry} from 'react-jss/lib/jss';
 import {MuiThemeToken, JssToken} from './tokens';
-
 import type {FusionPlugin} from 'fusion-core';
 import type {MaterialUIDepsType, MaterialUIServiceType} from './types.js';
 import {addProviders} from './middleware';
@@ -13,10 +13,12 @@ const plugin =
   createPlugin({
     deps: {theme: MuiThemeToken.optional, jss: JssToken.optional},
     provides,
-    middleware(_, muiService) {
+    middleware(_, muiService: MaterialUIServiceType) {
       return async (ctx, next) => {
         if (!ctx.element) return next();
-        const {sheetsRegistry} = muiService.from(ctx);
+        const {
+          sheetsRegistry,
+        }: {sheetsRegistry: SheetsRegistry} = muiService.from(ctx);
 
         ctx.element = await addProviders(ctx, muiService);
 
