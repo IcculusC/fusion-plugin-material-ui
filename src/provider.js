@@ -1,6 +1,6 @@
 // @flow
 import {memoize} from 'fusion-core';
-import {SheetsRegistry} from 'react-jss/lib/jss';
+import {Jss, SheetsRegistry} from 'react-jss/lib/jss';
 import {create as createJss} from 'jss';
 import {
   createMuiTheme,
@@ -9,31 +9,38 @@ import {
 } from '@material-ui/core/styles';
 
 import type {Context} from 'fusion-core';
+import type {GenerateClassName} from 'jss/lib/types';
+import type {MaterialUIServiceType} from './types';
 
-export const provides = ({jss, theme}: any) => {
-  class MuiService<T> {
+export const provides = ({
+  jss,
+  theme,
+}: {
+  jss: Jss,
+  theme: mixed,
+}): MaterialUIServiceType => {
+  class MuiService {
     constructor(ctx) {
       this.ctx = ctx;
-      this.sheetsRegistry = new SheetsRegistry();
       this.generateClassName = createGenerateClassName();
-      this.sheetsManager = new Map();
-      this.theme = theme ? theme : createMuiTheme();
       if (jss) {
         this.jss = jss;
       } else {
         this.jss = createJss(jssPreset());
       }
+      this.sheetsManager = new Map();
+      this.sheetsRegistry = new SheetsRegistry();
+      this.theme = theme ? theme : createMuiTheme();
     }
 
-    // TODO: More specific types
-    theme: T;
     ctx: Context;
-    sheetsRegistry: mixed;
-    jss: mixed;
-    generateClassName: mixed;
-    sheetsManager: mixed;
+    generateClassName: GenerateClassName;
+    jss: Jss;
+    sheetsManager: Map<mixed, mixed>;
+    sheetsRegistry: SheetsRegistry;
+    theme: mixed; // TODO: more specific type
   }
   return {
-    from: memoize(ctx => new MuiService(ctx)),
+    from: memoize((ctx: Context): MuiService => new MuiService(ctx)),
   };
 };
