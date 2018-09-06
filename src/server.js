@@ -25,8 +25,8 @@ const plugin =
         await next();
 
         // $FlowFixMe
-        const serialized: string = sheetsRegistry.toString();
-        const styles: Object = dangerouslySetHTML(
+        const serialized = sheetsRegistry.toString();
+        const styles = dangerouslySetHTML(
           `<style type="text/css" id="__MUI_STYLES__">${serialized}</style>`
         );
         ctx.template.body.push(styles);

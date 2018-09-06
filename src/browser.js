@@ -20,9 +20,9 @@ const plugin =
 
         await next();
 
-        const el: mixed =
-          __BROWSER__ && document.getElementById('__MUI_STYLES__');
-        if (el && el instanceof HTMLElement) el.remove();
+        const el =
+          __BROWSER__ && document && document.getElementById('__MUI_STYLES__');
+        if (el) el.remove();
       };
     },
   });
