@@ -18,9 +18,10 @@
     "./dist/browser.es2015.es.js": "./dist/browser.es2017.es.js"
   },
   "devDependencies": {
-    "@babel/preset-react": "7.0.0-beta.49",
+    "@babel/preset-react": "^7.0.0",
+    "@material-ui/core": "^1.5.1",
     "babel-eslint": "^8.2.3",
-    "create-universal-package": "3.4.4",
+    "create-universal-package": "3.4.6",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
     "eslint": "^4.19.1",
@@ -42,7 +43,11 @@
     "unitest": "2.1.1"
   },
   "peerDependencies": {
-    "react": "14.x - 16.x"
+    "@material-ui/core": "1.x",
+    "fusion-core": "1.x",
+    "fusion-react": "1.x",
+    "react": "14.x - 16.x",
+    "react-dom": "^16.3.2"
   },
   "scripts": {
     "clean": "rm -rf dist",
@@ -63,7 +68,6 @@
     "src"
   ],
   "dependencies": {
-    "@material-ui/core": "^1.5.1",
     "jss": "^9.8.7",
     "react-jss": "^8.6.1"
   }
