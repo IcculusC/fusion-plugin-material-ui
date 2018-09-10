@@ -1,8 +1,7 @@
 // @flow
 import React from 'react';
-
 import JssProvider from 'react-jss/lib/JssProvider';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 
 import type {Context} from 'fusion-core';
 import type {MaterialUIServiceType} from './types.js';

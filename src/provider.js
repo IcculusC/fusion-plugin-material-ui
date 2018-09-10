@@ -1,12 +1,10 @@
 // @flow
 import {memoize} from 'fusion-core';
-import {Jss, SheetsRegistry} from 'react-jss/lib/jss';
-import {create as createJss} from 'jss';
-import {
-  createMuiTheme,
-  jssPreset,
-  createGenerateClassName,
-} from '@material-ui/core/styles';
+import {SheetsRegistry} from 'react-jss/lib/jss';
+import Jss from 'jss/lib/Jss';
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import jssPreset from '@material-ui/core/styles/jssPreset';
+import createGenerateClassName from '@material-ui/core/styles/createGenerateClassName';
 
 import type {Context} from 'fusion-core';
 import type {GenerateClassName} from 'jss/lib/types';
@@ -26,7 +24,7 @@ export const provides = ({
       if (jss) {
         this.jss = jss;
       } else {
-        this.jss = createJss(jssPreset());
+        this.jss = new Jss(jssPreset());
       }
       this.sheetsManager = new Map();
       this.sheetsRegistry = new SheetsRegistry();
