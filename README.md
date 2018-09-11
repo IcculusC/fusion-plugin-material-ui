@@ -27,7 +27,7 @@ yarn add fusion-plugin-material-ui
 ```js
 // ButtonWrap.js
 import React from 'react';
-import Button from '@material-ui/styles/Button';
+import Button from '@material-ui/core/Button';
 
 export ButtonWrap = () => (
   <Button
