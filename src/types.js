@@ -6,8 +6,8 @@ import {Jss, SheetsRegistry} from 'react-jss/lib/jss';
 import type {GenerateClassName} from 'jss/lib/types';
 
 export type MaterialUIDepsType = {
-  theme: MuiThemeToken.optional,
-  jss: JssToken.optional,
+  theme: typeof MuiThemeToken.optional,
+  jss: typeof JssToken.optional,
 };
 
 export type MaterialUIServiceType = {
