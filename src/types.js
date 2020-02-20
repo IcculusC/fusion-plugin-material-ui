@@ -1,9 +1,10 @@
 // @flow
-import {MuiThemeToken, JssToken} from './tokens.js';
-
 import type {Context} from 'fusion-core';
-import {Jss, SheetsRegistry} from 'react-jss/lib/jss';
-import type {GenerateClassName} from 'jss/lib/types';
+import {Jss, SheetsRegistry} from 'jss';
+import type {GenerateId} from 'jss';
+import {Theme} from '@material-ui/core/styles';
+
+import {MuiThemeToken, JssToken} from './tokens.js';
 
 export type MaterialUIDepsType = {
   theme: typeof MuiThemeToken.optional,
@@ -15,10 +16,9 @@ export type MaterialUIServiceType = {
     ctx: Context
   ) => {
     ctx: Context,
-    generateClassName: GenerateClassName,
+    generateClassName: GenerateId,
     jss: Jss,
-    sheetsManager: Map<mixed, mixed>,
     sheetsRegistry: SheetsRegistry,
-    theme: mixed, // TODO: More specific type
+    theme: Theme,
   },
 };
