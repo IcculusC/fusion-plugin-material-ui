@@ -1,7 +1,7 @@
 {
   "name": "fusion-plugin-material-ui",
   "description": "material-ui support for Fusion.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "files": [
     "dist",
