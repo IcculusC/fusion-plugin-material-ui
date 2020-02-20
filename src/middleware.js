@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
-import JssProvider from 'react-jss/lib/JssProvider';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import StylesProvider from '@material-ui/styles/StylesProvider';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import type {Context} from 'fusion-core';
 import type {MaterialUIServiceType} from './types.js';
@@ -10,22 +10,14 @@ export const addProviders = async (
   ctx: Context,
   muiService: MaterialUIServiceType
 ) => {
-  const {
-    jss,
-    sheetsRegistry,
-    theme,
-    generateClassName,
-    sheetsManager,
-  } = muiService.from(ctx);
+  const {generateClassName, jss, sheetsRegistry, theme} = muiService.from(ctx);
   return (
-    <JssProvider
-      jss={jss}
-      registry={sheetsRegistry}
+    <StylesProvider
       generateClassName={generateClassName}
+      jss={jss}
+      sheetsRegistry={sheetsRegistry}
     >
-      <MuiThemeProvider theme={theme} sheetsManager={sheetsManager}>
-        {ctx.element}
-      </MuiThemeProvider>
-    </JssProvider>
+      <ThemeProvider theme={theme}>{ctx.element}</ThemeProvider>
+    </StylesProvider>
   );
 };

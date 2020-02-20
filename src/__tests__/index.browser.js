@@ -1,16 +1,13 @@
 // @flow
 /* eslint-env browser */
-import tape from 'tape-cup';
-import React from 'react';
 import Enzyme, {mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import App from 'fusion-core';
-import {getService} from 'fusion-test-utils';
+import {createRenderContext, getService, getSimulator} from 'fusion-test-utils';
 import {create as createJss} from 'jss';
-
-import JssProvider from 'react-jss/lib/JssProvider';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import StylesProvider from '@material-ui/styles/StylesProvider';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 
 import Plugin from '../browser.js';
 import {JssToken, MuiThemeToken} from '../tokens';
@@ -32,112 +29,94 @@ const appCreator = (theme, jss) => {
   return () => app;
 };
 
-tape('provides a custom jss instance', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
+test('provides a custom jss instance', async done => {
+  const ctx: any = createRenderContext('');
   const service = getService(appCreator(null, testJss), Plugin);
 
-  t.plan(1);
+  expect.assertions(1);
 
-  t.equals(service.from(ctx).jss, testJss, 'passes along the jss instance');
+  expect(service.from(ctx).jss).toBe(testJss);
 
-  t.end();
+  done();
 });
 
-tape('provides theme', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
+test('provides theme', async done => {
+  const ctx: any = createRenderContext('');
   const serviceWithTheme = getService(appCreator(testTheme), Plugin);
   const serviceWithoutTheme = getService(appCreator(), Plugin);
 
-  t.plan(2);
+  expect.assertions(2);
 
   const theme: any = serviceWithTheme.from(ctx).theme;
-  t.equals(theme.foo, 'bar', 'passes along theme');
-  t.notEqual(
-    serviceWithoutTheme.from(ctx).theme,
-    null,
-    'but has a default theme'
-  );
+  expect(theme.foo).toBe('bar');
+  expect(serviceWithoutTheme.from(ctx).theme).not.toBeNull();
 
-  t.end();
+  done();
 });
 
-tape('removes useless SSR styles after render', async t => {
+test('removes useless SSR styles after render', async done => {
   const ssrStyles = document.createElement('style');
   ssrStyles.setAttribute('type', 'text/css');
   ssrStyles.setAttribute('id', '__MUI_STYLES__');
   if (!(document.body instanceof HTMLElement)) {
-    return t.fail();
+    return done();
   }
   document.body.appendChild(ssrStyles);
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
-  const service = getService(appCreator(), Plugin);
-  t.plan(2);
-  t.notEquals(document.getElementById('__MUI_STYLES__'), null);
+  expect.assertions(2);
+  expect(document.getElementById('__MUI_STYLES__')).not.toBeNull();
   try {
-    await (Plugin.middleware &&
-      // $FlowFixMe
-      Plugin.middleware(null, service)((ctx: any), () => Promise.resolve()));
+    await getSimulator(appCreator()(), Plugin).render('/');
   } catch (e) {
-    t.ifError(e);
+    done(e);
   }
-  t.equals(document.getElementById('__MUI_STYLES__'), null);
-  t.end();
+  expect(document.getElementById('__MUI_STYLES__')).toBeNull();
+  done();
 });
 
-tape('browser middleware with default theme', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
-  const service = getService(appCreator(testTheme), Plugin);
+test('browser middleware with default theme', async done => {
+  let ctx;
   try {
-    await (Plugin.middleware &&
-      // $FlowFixMe
-      Plugin.middleware(null, service)((ctx: any), () => Promise.resolve()));
+    ctx = await getSimulator(appCreator()(), Plugin).render('/');
   } catch (e) {
-    t.ifError(e);
+    done(e);
   }
-  t.plan(2);
+  expect.assertions(2);
   const rendered = mount(ctx.element);
-  t.equal(rendered.find(MuiThemeProvider).length, 1);
-  t.notEquals(rendered.find(MuiThemeProvider).props().theme, null);
-  t.end();
+  const themeProvider = rendered.find(ThemeProvider);
+  expect(themeProvider).toHaveLength(1);
+  expect(themeProvider.prop('theme')).not.toBeNull();
+  done();
 });
 
-tape('browser middleware with registered theme', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
-  const service = getService(appCreator(testTheme), Plugin);
+test('browser middleware with registered theme', async done => {
+  let ctx;
   try {
-    await (Plugin.middleware &&
-      // $FlowFixMe
-      Plugin.middleware(null, service)((ctx: any), () => Promise.resolve()));
+    ctx = await getSimulator(appCreator(testTheme)(), Plugin).render('/');
   } catch (e) {
-    t.ifError(e);
+    done(e);
   }
-  t.plan(2);
+  expect.assertions(2);
   const rendered = mount(ctx.element);
-  t.equal(rendered.find(MuiThemeProvider).length, 1);
-  t.equal(rendered.find(MuiThemeProvider).props().theme, testTheme);
-  t.end();
+  const themeProvider = rendered.find(ThemeProvider);
+  expect(themeProvider).toHaveLength(1);
+  expect(themeProvider.prop('theme')).toEqual(
+    expect.objectContaining(testTheme)
+  );
+  done();
 });
 
-tape('browser middleware with jss', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
+test('browser middleware with jss', async done => {
   const testJss = createJss();
-  const service = getService(appCreator(null, testJss), Plugin);
+  let ctx;
   try {
-    await (Plugin.middleware &&
-      // $FlowFixMe
-      Plugin.middleware(null, service)((ctx: any), () => Promise.resolve()));
+    ctx = await getSimulator(appCreator(null, testJss)(), Plugin).render('/');
   } catch (e) {
-    t.ifError(e);
+    done(e);
   }
-  t.plan(2);
+  expect.assertions(2);
   const rendered = mount(ctx.element);
-  t.equal(rendered.find(JssProvider).length, 1);
-  t.equal(rendered.find(JssProvider).props().jss, testJss);
-  t.end();
+  const stylesProvider = rendered.find(StylesProvider);
+  expect(stylesProvider).toHaveLength(1);
+  expect(stylesProvider.prop('jss')).toEqual(testJss);
+  done();
 });

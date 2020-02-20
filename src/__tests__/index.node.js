@@ -1,9 +1,6 @@
 // @flow
-import tape from 'tape-cup';
-import React from 'react';
-
-import App, {consumeSanitizedHTML} from 'fusion-core';
-import {getService} from 'fusion-test-utils';
+import App, {consumeSanitizedHTML, type Context} from 'fusion-core';
+import {getService, getSimulator, createRenderContext} from 'fusion-test-utils';
 import {create as createJss} from 'jss';
 
 import Plugin, {JssToken, MuiThemeToken} from '../index.js';
@@ -20,51 +17,46 @@ const appCreator = (theme, jss) => {
   return () => app;
 };
 
-tape('provides a custom jss instance', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
+test('provides a custom jss instance', async done => {
+  const ctx: Context = createRenderContext('');
   const testJss = createJss();
   const service = getService(appCreator(null, testJss), Plugin);
 
-  t.plan(1);
+  expect.assertions(1);
 
-  t.equals(service.from(ctx).jss, testJss, 'passes along the jss instance');
+  expect(service.from(ctx).jss).toBe(testJss);
 
-  t.end();
+  done();
 });
 
-tape('provides theme', async t => {
-  const element = React.createElement('div');
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
+test('provides theme', async done => {
+  const ctx: Context = createRenderContext('');
   const serviceWithTheme = getService(appCreator({foo: 'bar'}), Plugin);
-  const serviceWithoutTheme = getService(appCreator(), Plugin);
+  const serviceWithDefaultTheme = getService(appCreator(), Plugin);
 
-  t.plan(2);
+  expect.assertions(2);
 
   const withTheme: any = serviceWithTheme.from(ctx).theme;
-  const withoutTheme: any = serviceWithoutTheme.from(ctx).theme;
+  const withDefaultTheme: any = serviceWithDefaultTheme.from(ctx).theme;
 
-  t.equals(withTheme.foo, 'bar', 'passes along theme');
-  t.notEqual(withoutTheme.spacing.unit, null, 'but has a default theme');
+  expect(withTheme.foo).toBe('bar');
+  expect(withDefaultTheme.spacing()).toBe(8);
 
-  t.end();
+  done();
 });
 
-tape('serialization', async t => {
-  const element = React.createElement('div'); // Button, {variant: 'contained', color: 'primary'});
-  const ctx: any = {element, template: {body: []}, memoized: new Map()};
-  const service = getService(appCreator(), Plugin);
+test('serialization', async done => {
+  const simulator = getSimulator(appCreator()(), Plugin);
 
-  t.plan(3);
+  expect.assertions(3);
 
-  // $FlowFixMe
-  await Plugin.middleware(null, service)(ctx, () => Promise.resolve());
-  t.equals(ctx.template.body.length, 1, 'pushes serialization to body');
-  t.equals(
+  const ctx: Context = await simulator.render('/');
+
+  expect(ctx.template.head.length).toBe(1);
+  expect(
     // $FlowFixMe
-    consumeSanitizedHTML(ctx.template.body[0]).match('</style>').input,
-    '<style type="text/css" id="__MUI_STYLES__"></style>'
-  );
-  t.equals(consumeSanitizedHTML(ctx.template.body[0]).match('</div>'), null);
-  t.end();
+    consumeSanitizedHTML(ctx.template.head[0]).match('</style>').input
+  ).toBe('<style type="text/css" id="__MUI_STYLES__"></style>');
+  expect(consumeSanitizedHTML(ctx.template.head[0]).match('</div>')).toBe(null);
+  done();
 });

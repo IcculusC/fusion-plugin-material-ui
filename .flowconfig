@@ -1,11 +1,13 @@
 [ignore]
-.*/node_modules/.*[^(package)]\.json$
-<PROJECT_ROOT>/dist/.*
+.*/node_modules/@uber/node-rosetta/.*
+.*/templates/.*
 
 [include]
-./src/
+../node_modules
+../../node_modules
 
 [libs]
+../flow-typed/
 
 [lints]
 
