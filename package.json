@@ -51,7 +51,8 @@
     "lint": "eslint .",
     "transpile": "yarn clean && cup-build",
     "test": "jest",
-    "prepare": "yarn transpile"
+    "prepare": "yarn transpile",
+    "prepublish": "yarn transpile"
   },
   "engines": {
     "node": ">= 8.11.0"
